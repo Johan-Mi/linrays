@@ -20,6 +20,11 @@
 (macro scattered.dir (Vec3 scattered.dx scattered.dy scattered.dz))
 (macro scattered.color (Vec3 scattered.r scattered.g scattered.b))
 
+(macro (set-hit-index i)
+       (when (= true did-hit)
+         (:= t-max hit.t)
+         (:= hit-index ,i)))
+
 (include "src/basic-macros.scratch")
 (include "src/color.scratch")
 (include "src/shapes/sphere.scratch")
@@ -32,7 +37,9 @@
   (costumes "blank" "assets/blank.png")
 
   (variables half-screen-width half-screen-height
-             did-hit hit.color.r hit.color.g hit.color.b
+             t-min t-max
+             did-hit hit.t
+             hit.color.r hit.color.g hit.color.b
              hit.x hit.y hit.z hit.dx hit.dy hit.dz
              scattered.dx scattered.dy scattered.dz
              scattered.r scattered.g scattered.b)
@@ -67,24 +74,30 @@
       (change-y -1)))
 
   (proc (trace ray.x ray.y ray.z ray.dx ray.dy ray.dz)
-    (variables r g b x y z dx dy dz)
+    (variables r g b x y z dx dy dz hit-index)
     (v3-store r g b (Vec3 1 1 1))
     (v3-store x y z ray.pos)
     (v3-store dx dy dz ray.dir)
+    (:= t-min NEAR-PLANE)
+    (:= t-max "Infinity")
     (repeat MAX-DEPTH
-      (hit-sphere x y z dx dy dz
-                  NEAR-PLANE "Infinity"
-                  0 0 1.5 1)
+      (:= hit-index 0)
+      (hit-sphere x y z dx dy dz 0 0 1.5 1)
+      (set-hit-index 1)
+      (hit-sphere x y z dx dy dz -2 -0.25 1 0.75)
+      (set-hit-index 2)
+      (hit-sphere x y z dx dy dz 2 -0.25 1 0.75)
+      (set-hit-index 3)
       (cond
-        (= did-hit false)
-        (then ; Ray flew off into the sky
+        (= hit-index 1) (scatter-lambertian 0.05 1 0.05)
+        (= hit-index 2) (scatter-lambertian 1 0.05 0.05)
+        (= hit-index 3) (scatter-lambertian 0.05 0.05 1)
+        (else ; Ray flew off into the sky
           (v3-store* r g b SKY-COLOR)
           (set-hit-color (Vec3 r g b))
-          (stop-this-script))
-        (else
-          (scatter-lambertian 1 0.05 0.05)
-          (v3-store x y z hit.pos)
-          (v3-store dx dy dz scattered.dir)
-          (v3-store* r g b scattered.color)))
+          (stop-this-script)))
+      (v3-store x y z hit.pos)
+      (v3-store dx dy dz scattered.dir)
+      (v3-store* r g b scattered.color)
     ; Ran out of iterations without finding a light source
     (set-hit-color (Vec3 0 0 0)))))

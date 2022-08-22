@@ -14,7 +14,7 @@
 (macro ray.dir (Vec3 ray.dx ray.dy ray.dz))
 (macro hit.color (Vec3 hit.color.r hit.color.g hit.color.b))
 (macro hit.pos (Vec3 hit.x hit.y hit.z))
-(macro hit.dir (Vec3 hit.dx hit.dy hit.dz))
+(macro hit.normal (Vec3 hit.dx hit.dy hit.dz))
 (macro scattered.dir (Vec3 scattered.dx scattered.dy scattered.dz))
 (macro scattered.color (Vec3 scattered.r scattered.g scattered.b))
 

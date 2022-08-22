@@ -6,11 +6,11 @@
     (v3-store scattered.r scattered.g scattered.b
               (Vec3 albedo.r albedo.g albedo.b))
     (v3-store scattered.dx scattered.dy scattered.dz
-              (v3+ hit.dir
+              (v3+ hit.normal
                    (Vec3 (* (sin theta) (cos phi))
                          (* (sin theta) (sin phi))
                          (cos theta))))
     (when (and (< scattered.dx 1e-8)
                (< scattered.dy 1e-8)
                (< scattered.dz 1e-8))
-      (v3-store scattered.dx scattered.dy scattered.dz hit.dir))))
+      (v3-store scattered.dx scattered.dy scattered.dz hit.normal))))

@@ -1,0 +1,74 @@
+(include "include/linspalg/src/linspalg.scratch")
+
+(macro samples-per-pixel 10)
+(macro vfov 70)
+(macro gamma 2.2)
+(macro cam.x 0)
+(macro cam.y 0)
+(macro cam.z 0)
+(macro SKY-COLOR-HIGH (Vec3 0.5 0.7 1.0))
+(macro SKY-COLOR-LOW (Vec3 1.0 1.0 1.0))
+(macro NEAR-PLANE 0.001)
+
+(macro ray.pos (Vec3 ray.x ray.y ray.z))
+(macro ray.dir (Vec3 ray.dx ray.dy ray.dz))
+(macro hit.color (Vec3 hit.color.r hit.color.g hit.color.b))
+
+(include "src/basic-macros.scratch")
+(include "src/color.scratch")
+(include "src/shapes/sphere.scratch")
+
+(sprite "Stage"
+  (costumes "backdrop" "assets/blank.png"))
+
+(sprite "main"
+  (costumes "blank" "assets/blank.png")
+
+  (variables half-screen-width half-screen-height
+             did-hit hit.color.r hit.color.g hit.color.b)
+
+  (proc (when-flag-clicked)
+    (set-xy "-Infinity" "Infinity")
+    (:= half-screen-width (- x-pos))
+    (:= half-screen-height y-pos)
+    (set-pen-size 1)
+    (render))
+
+  (proc (render)
+    (variables pixel.r pixel.g pixel.b)
+    (repeat (+ 1 (* 2 half-screen-height))
+      (pen-down)
+      (repeat (* 2 half-screen-width)
+        (v3-store pixel.r pixel.g pixel.b (Vec3 0 0 0))
+        (repeat samples-per-pixel
+          (trace
+            cam.x cam.y cam.z
+            (* (tan vfov) (/ (+ x-pos (random -0.5 0.5)) half-screen-height))
+            (* (tan vfov) (/ (+ y-pos (random -0.5 0.5)) half-screen-height))
+            1)
+          (+= pixel.r hit.color.r)
+          (+= pixel.g hit.color.g)
+          (+= pixel.b hit.color.b))
+        (v3-use gamma-correct (v3-scale (/ 1 samples-per-pixel)
+                                        (Vec3 pixel.r pixel.g pixel.b)))
+        (change-x 1))
+      (pen-up)
+      (set-x "-Infinity")
+      (change-y -1)))
+
+  (proc (trace ray.x ray.y ray.z ray.dx ray.dy ray.dz)
+    (variables slope)
+    (hit-sphere ray.x ray.y ray.z ray.dx ray.dy ray.dz
+                NEAR-PLANE "Infinity"
+                0 0 1.5 1)
+    (when (= did-hit true)
+      (v3-store hit.color.r hit.color.g hit.color.b (Vec3 1 0 0))
+      (stop-this-script))
+    (:= slope ray.dy)
+    (cond
+      (> slope 1) (set-hit-color SKY-COLOR-HIGH)
+      (< slope -1) (set-hit-color SKY-COLOR-LOW)
+      (else (set-hit-color
+              (v3-scale 0.5
+                        (v3+ (v3-scale (+ 1 slope) SKY-COLOR-HIGH)
+                             (v3-scale (- 1 slope) SKY-COLOR-LOW))))))))

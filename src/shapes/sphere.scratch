@@ -1,0 +1,21 @@
+(sprite "main"
+  (proc (hit-sphere ray.x ray.y ray.z ray.dx ray.dy ray.dz
+                    t-min t-max
+                    sphere.x sphere.y sphere.z sphere.radius)
+    (variables a half-b discriminant root)
+    (:= did-hit false)
+    (:= a (v3-len^2 ray.dir))
+    (:= half-b (- (v3-dot ray.dir
+                          (v3- ray.pos (Vec3 sphere.x sphere.y sphere.z)))))
+    (:= discriminant
+        (- (* half-b half-b)
+           (* a (- (v3-len^2 (v3- ray.pos (Vec3 sphere.x sphere.y sphere.z)))
+                   sphere.radius))))
+    (when (< discriminant 0)
+      (stop-this-script))
+    (:= root (/ (- half-b (sqrt discriminant)) a))
+    (when (or (< root t-min) (> root t-max))
+      (:= root (/ (+ half-b (sqrt discriminant)) a))
+      (when (or (< root t-min) (> root t-max))
+        (stop-this-script)))
+    (:= did-hit true)))

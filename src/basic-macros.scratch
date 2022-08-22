@@ -1,0 +1,17 @@
+(macro then do)
+(macro else do)
+
+(macro true "true")
+(macro false "false")
+
+(macro (pow base exponent)
+  (e^ (* ,exponent (ln ,base))))
+
+(macro (clamp-below var lower-limit)
+       (when (> ,var ,lower-limit)
+         (:= ,var ,lower-limit)))
+
+(macro (clamp-between var lower-limit upper-limit)
+       (cond
+         (> ,var ,upper-limit) (:= ,var ,upper-limit)
+         (< ,var ,lower-limit) (:= ,var ,lower-limit)))

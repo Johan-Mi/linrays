@@ -1,7 +1,7 @@
 (sprite "main"
   (proc (hit-sphere ray.x ray.y ray.z ray.dx ray.dy ray.dz
                     sphere.x sphere.y sphere.z sphere.radius)
-    (variables a half-b discriminant root)
+    (variables a half-b discriminant root normal-len)
     (:= did-hit false)
     (:= a (v3-len^2 ray.dir))
     (:= half-b (- (v3-dot ray.dir
@@ -21,4 +21,6 @@
     (v3-store hit.x hit.y hit.z (v3+ ray.pos (v3-scale root ray.dir)))
     (v3-store hit.dx hit.dy hit.dz
               (v3- hit.pos (Vec3 sphere.x sphere.y sphere.z)))
+    (:= normal-len (v3-len hit.dir))
+    (v3-store hit.dx hit.dy hit.dz (v3-scale (/ 1 normal-len) hit.dir))
     (:= did-hit true)))

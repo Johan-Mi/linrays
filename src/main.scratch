@@ -1,7 +1,7 @@
 (include "include/linspalg/src/linspalg.scratch")
 
 (macro samples-per-pixel 10)
-(macro vfov 70)
+(macro vfov 30)
 (macro gamma 2.2)
 (macro cam.x 0)
 (macro cam.y 0)
@@ -82,11 +82,11 @@
     (repeat MAX-DEPTH
       (:= t-max "Infinity")
       (:= hit-index 0)
-      (hit-sphere x y z dx dy dz 0 0 1.5 1)
+      (hit-sphere x y z dx dy dz 0 0 5 1)
       (set-hit-index 1)
-      (hit-sphere x y z dx dy dz -2 -0.25 1 0.75)
+      (hit-sphere x y z dx dy dz -2 -0.25 4 0.75)
       (set-hit-index 2)
-      (hit-sphere x y z dx dy dz 2 -0.25 1 0.75)
+      (hit-sphere x y z dx dy dz 2 -0.25 4 0.75)
       (set-hit-index 3)
       (cond
         (= hit-index 1) (scatter-lambertian 0.05 1 0.05)

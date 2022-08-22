@@ -18,4 +18,7 @@
       (:= root (/ (+ half-b (sqrt discriminant)) a))
       (when (or (< root t-min) (> root t-max))
         (stop-this-script)))
+    (v3-store hit.x hit.y hit.z (v3+ ray.pos (v3-scale root ray.dir)))
+    (v3-store hit.dx hit.dy hit.dz
+              (v3- hit.pos (Vec3 sphere.x sphere.y sphere.z)))
     (:= did-hit true)))

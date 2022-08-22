@@ -9,14 +9,22 @@
 (macro SKY-COLOR-HIGH (Vec3 0.5 0.7 1.0))
 (macro SKY-COLOR-LOW (Vec3 1.0 1.0 1.0))
 (macro NEAR-PLANE 0.001)
+(macro MAX-DEPTH 10)
+
+(macro TAU 6.28318530717958647692528676655900577)
 
 (macro ray.pos (Vec3 ray.x ray.y ray.z))
 (macro ray.dir (Vec3 ray.dx ray.dy ray.dz))
 (macro hit.color (Vec3 hit.color.r hit.color.g hit.color.b))
+(macro hit.pos (Vec3 hit.x hit.y hit.z))
+(macro hit.dir (Vec3 hit.dx hit.dy hit.dz))
+(macro scattered.dir (Vec3 scattered.dx scattered.dy scattered.dz))
+(macro scattered.color (Vec3 scattered.r scattered.g scattered.b))
 
 (include "src/basic-macros.scratch")
 (include "src/color.scratch")
 (include "src/shapes/sphere.scratch")
+(include "src/materials/lambertian.scratch")
 
 (sprite "Stage"
   (costumes "backdrop" "assets/blank.png"))
@@ -25,7 +33,10 @@
   (costumes "blank" "assets/blank.png")
 
   (variables half-screen-width half-screen-height
-             did-hit hit.color.r hit.color.g hit.color.b)
+             did-hit hit.color.r hit.color.g hit.color.b
+             hit.x hit.y hit.z hit.dx hit.dy hit.dz
+             scattered.dx scattered.dy scattered.dz
+             scattered.r scattered.g scattered.b)
 
   (proc (when-flag-clicked)
     (set-xy "-Infinity" "Infinity")
@@ -57,18 +68,31 @@
       (change-y -1)))
 
   (proc (trace ray.x ray.y ray.z ray.dx ray.dy ray.dz)
-    (variables slope)
-    (hit-sphere ray.x ray.y ray.z ray.dx ray.dy ray.dz
-                NEAR-PLANE "Infinity"
-                0 0 1.5 1)
-    (when (= did-hit true)
-      (v3-store hit.color.r hit.color.g hit.color.b (Vec3 1 0 0))
-      (stop-this-script))
-    (:= slope ray.dy)
-    (cond
-      (> slope 1) (set-hit-color SKY-COLOR-HIGH)
-      (< slope -1) (set-hit-color SKY-COLOR-LOW)
-      (else (set-hit-color
-              (v3-scale 0.5
-                        (v3+ (v3-scale (+ 1 slope) SKY-COLOR-HIGH)
-                             (v3-scale (- 1 slope) SKY-COLOR-LOW))))))))
+    (variables r g b x y z dx dy dz slope)
+    (v3-store r g b (Vec3 1 1 1))
+    (v3-store x y z ray.pos)
+    (v3-store dx dy dz ray.dir)
+    (repeat MAX-DEPTH
+      (hit-sphere x y z dx dy dz
+                  NEAR-PLANE "Infinity"
+                  0 0 1.5 1)
+      (cond
+        (= did-hit false)
+        (then ; Ray flew off into the sky
+          (:= slope (/ dy (v2-len (Vec2 dx dz))))
+          (cond
+            (> slope 1) (v3-store* r g b SKY-COLOR-HIGH)
+            (< slope -1) (v3-store* r g b SKY-COLOR-LOW)
+            (else (v3-store* r g b
+                    (v3-scale 0.5
+                              (v3+ (v3-scale (+ 1 slope) SKY-COLOR-HIGH)
+                                   (v3-scale (- 1 slope) SKY-COLOR-LOW))))))
+          (set-hit-color (Vec3 r g b))
+          (stop-this-script))
+        (else
+          (scatter-lambertian 1 0.05 0.05)
+          (v3-store x y z hit.pos)
+          (v3-store dx dy dz scattered.dir)
+          (v3-store* r g b scattered.color)))
+    ; Ran out of iterations without finding a light source
+    (set-hit-color (Vec3 0 0 0)))))

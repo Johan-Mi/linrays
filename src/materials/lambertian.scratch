@@ -1,7 +1,7 @@
 (sprite "main"
   (proc (scatter-lambertian albedo.r albedo.g albedo.b)
     (variables phi theta rand.x rand.y rand.z)
-    (:= phi (random 0 TAU))
+    (:= phi (random 0 "360.0"))
     (:= theta (acos (random "-1.0" 1.0)))
     (v3-store scattered.r scattered.g scattered.b
               (Vec3 albedo.r albedo.g albedo.b))

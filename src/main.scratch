@@ -10,8 +10,6 @@
 (macro NEAR-PLANE 0.001)
 (macro MAX-DEPTH 10)
 
-(macro TAU 6.28318530717958647692528676655900577)
-
 (macro ray.pos (Vec3 ray.x ray.y ray.z))
 (macro ray.dir (Vec3 ray.dx ray.dy ray.dz))
 (macro hit.color (Vec3 hit.color.r hit.color.g hit.color.b))

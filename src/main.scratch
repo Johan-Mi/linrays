@@ -27,6 +27,7 @@
 (include "src/color.scratch")
 (include "src/shapes/sphere.scratch")
 (include "src/materials/lambertian.scratch")
+(include "src/materials/metal.scratch")
 
 (sprite "Stage"
   (costumes "backdrop" "assets/blank.png"))
@@ -88,7 +89,7 @@
       (set-hit-index 3)
       (cond
         (= hit-index 1) (scatter-lambertian 0.05 1 0.05)
-        (= hit-index 2) (scatter-lambertian 1 0.05 0.05)
+        (= hit-index 2) (scatter-metal dx dy dz 1 0.3 0.3)
         (= hit-index 3) (scatter-lambertian 0.05 0.05 1)
         (else ; Ray flew off into the sky
           (v3-store* r g b SKY-COLOR)

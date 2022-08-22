@@ -6,8 +6,7 @@
 (macro cam.x 0)
 (macro cam.y 0)
 (macro cam.z 0)
-(macro SKY-COLOR-HIGH (Vec3 0.5 0.7 1.0))
-(macro SKY-COLOR-LOW (Vec3 1.0 1.0 1.0))
+(macro SKY-COLOR (Vec3 0.5 0.7 1.0))
 (macro NEAR-PLANE 0.001)
 (macro MAX-DEPTH 10)
 
@@ -68,7 +67,7 @@
       (change-y -1)))
 
   (proc (trace ray.x ray.y ray.z ray.dx ray.dy ray.dz)
-    (variables r g b x y z dx dy dz slope)
+    (variables r g b x y z dx dy dz)
     (v3-store r g b (Vec3 1 1 1))
     (v3-store x y z ray.pos)
     (v3-store dx dy dz ray.dir)
@@ -79,14 +78,7 @@
       (cond
         (= did-hit false)
         (then ; Ray flew off into the sky
-          (:= slope (/ dy (v2-len (Vec2 dx dz))))
-          (cond
-            (> slope 1) (v3-store* r g b SKY-COLOR-HIGH)
-            (< slope -1) (v3-store* r g b SKY-COLOR-LOW)
-            (else (v3-store* r g b
-                    (v3-scale 0.5
-                              (v3+ (v3-scale (+ 1 slope) SKY-COLOR-HIGH)
-                                   (v3-scale (- 1 slope) SKY-COLOR-LOW))))))
+          (v3-store* r g b SKY-COLOR)
           (set-hit-color (Vec3 r g b))
           (stop-this-script))
         (else

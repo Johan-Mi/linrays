@@ -79,8 +79,8 @@
     (v3-store x y z ray.pos)
     (v3-store dx dy dz ray.dir)
     (:= t-min NEAR-PLANE)
-    (:= t-max "Infinity")
     (repeat MAX-DEPTH
+      (:= t-max "Infinity")
       (:= hit-index 0)
       (hit-sphere x y z dx dy dz 0 0 1.5 1)
       (set-hit-index 1)

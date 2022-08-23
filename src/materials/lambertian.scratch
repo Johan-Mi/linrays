@@ -3,14 +3,13 @@
     (variables phi theta rand.x rand.y rand.z)
     (:= phi (random 0 "360.0"))
     (:= theta (acos (random "-1.0" 1.0)))
-    (v3-store scattered.r scattered.g scattered.b
-              (Vec3 albedo.r albedo.g albedo.b))
-    (v3-store scattered.dx scattered.dy scattered.dz
-              (v3+ hit.normal
-                   (Vec3 (* (sin theta) (cos phi))
-                         (* (sin theta) (sin phi))
-                         (cos theta))))
+    (v3:= scattered.color (Vec3 albedo.r albedo.g albedo.b))
+    (v3:= scattered.dir
+          (v3+ hit.normal
+               (Vec3 (* (sin theta) (cos phi))
+                     (* (sin theta) (sin phi))
+                     (cos theta))))
     (when (and (< scattered.dx 1e-8)
                (< scattered.dy 1e-8)
                (< scattered.dz 1e-8))
-      (v3-store scattered.dx scattered.dy scattered.dz hit.normal))))
+      (v3:= scattered.dir hit.normal))))

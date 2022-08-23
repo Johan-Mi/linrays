@@ -93,10 +93,10 @@
         (= hit-index 3) (scatter-lambertian 0.05 0.05 1)
         (else ; Ray flew off into the sky
           (v3-store* r g b SKY-COLOR)
-          (set-hit-color (Vec3 r g b))
+          (v3:= hit.color (Vec3 r g b))
           (stop-this-script)))
       (v3-store x y z hit.pos)
       (v3-store dx dy dz scattered.dir)
       (v3-store* r g b scattered.color)
     ; Ran out of iterations without finding a light source
-    (set-hit-color (Vec3 0 0 0)))))
+    (v3:= hit.color (Vec3 0 0 0)))))

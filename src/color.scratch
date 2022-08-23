@@ -1,6 +1,3 @@
-(macro (set-hit-color color)
-       (v3-store hit.color.r hit.color.g hit.color.b ,color))
-
 (sprite "main"
   (proc (gamma-correct r g b)
     (variables r2 g2 b2 luma sat)

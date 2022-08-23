@@ -3,7 +3,5 @@
 
 (sprite "main"
   (proc (scatter-metal ray.dx ray.dy ray.dz albedo.r albedo.g albedo.b)
-    (v3-store scattered.r scattered.g scattered.b
-              (Vec3 albedo.r albedo.g albedo.b))
-    (v3-store scattered.dx scattered.dy scattered.dz
-              (v3-reflect ray.dir hit.normal))))
+    (v3:= scattered.color (Vec3 albedo.r albedo.g albedo.b))
+    (v3:= scattered.dir (v3-reflect ray.dir hit.normal))))

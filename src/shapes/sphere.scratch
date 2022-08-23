@@ -9,7 +9,7 @@
     (:= discriminant
         (- (* half-b half-b)
            (* a (- (v3-len^2 (v3- ray.pos (Vec3 sphere.x sphere.y sphere.z)))
-                   sphere.radius))))
+                   (* sphere.radius sphere.radius)))))
     (when (< discriminant 0)
       (stop-this-script))
     (:= root (/ (- half-b (sqrt discriminant)) a))

@@ -59,8 +59,8 @@
         (repeat samples-per-pixel
           (trace
             cam.x cam.y cam.z
-            (* (tan vfov) (/ (+ x-pos (random -0.5 0.5)) half-screen-height))
-            (* (tan vfov) (/ (+ y-pos (random -0.5 0.5)) half-screen-height))
+            (* (tan vfov) (/ (+ x-pos (random 1.5 2.5)) half-screen-height))
+            (* (tan vfov) (/ (+ y-pos (random 1.5 2.5)) half-screen-height))
             1)
           (+= pixel.r hit.color.r)
           (+= pixel.g hit.color.g)

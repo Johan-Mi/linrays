@@ -1,6 +1,6 @@
 (sprite "main"
   (proc (scatter-lambertian albedo.r albedo.g albedo.b)
-    (variables phi theta rand.x rand.y rand.z)
+    (variables phi theta)
     (:= phi (random 0 "360.0"))
     (:= theta (acos (random "-1.0" 1.0)))
     (v3:= scattered.color (Vec3 albedo.r albedo.g albedo.b))

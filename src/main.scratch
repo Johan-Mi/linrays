@@ -97,6 +97,6 @@
           (stop-this-script)))
       (v3-store x y z hit.pos)
       (v3-store dx dy dz scattered.dir)
-      (v3-store* r g b scattered.color)
+      (v3-store* r g b scattered.color))
     ; Ran out of iterations without finding a light source
-    (v3:= hit.color (Vec3 0 0 0)))))
+    (v3:= hit.color (Vec3 0 0 0))))

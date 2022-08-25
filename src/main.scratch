@@ -18,6 +18,9 @@
 (macro scattered.dir (Vec3 scattered.dx scattered.dy scattered.dz))
 (macro scattered.color (Vec3 scattered.r scattered.g scattered.b))
 
+(macro (v3-reflect vec normal)
+       (v3- ,vec (v3-scale (* 2 (v3-dot ,vec ,normal)) ,normal)))
+
 (macro (set-hit-index i)
        (when (= true did-hit)
          (:= t-max hit.t)
@@ -28,6 +31,7 @@
 (include "src/shapes/sphere.scratch")
 (include "src/materials/lambertian.scratch")
 (include "src/materials/metal.scratch")
+(include "src/materials/dielectric.scratch")
 
 (sprite "Stage"
   (costumes "backdrop" "assets/blank.png"))
@@ -37,7 +41,7 @@
 
   (variables half-screen-width half-screen-height
              t-min t-max
-             did-hit hit.t
+             did-hit hit.t hit.front-face
              hit.color.r hit.color.g hit.color.b
              hit.x hit.y hit.z hit.dx hit.dy hit.dz
              scattered.dx scattered.dy scattered.dz
@@ -72,6 +76,14 @@
       (set-x "-Infinity")
       (change-y -1)))
 
+  (proc (set-hit-front-face ray.dx ray.dy ray.dz)
+    (if (< (v3-dot ray.dir hit.normal) 0)
+      (then
+        (:= hit.front-face true))
+      (else
+        (:= hit.front-face true)
+        (v3:= hit.normal (v3-scale -1 hit.normal)))))
+
   (proc (trace ray.x ray.y ray.z ray.dx ray.dy ray.dz)
     (variables r g b x y z dx dy dz hit-index)
     (v3-store r g b (Vec3 1 1 1))
@@ -87,10 +99,13 @@
       (set-hit-index 2)
       (hit-sphere x y z dx dy dz 2 -0.25 4 0.75)
       (set-hit-index 3)
+      (hit-sphere x y z dx dy dz 0 -101 0 100)
+      (set-hit-index 4)
       (cond
-        (= hit-index 1) (scatter-lambertian 0.05 1 0.05)
+        (= hit-index 1) (scatter-dielectric dx dy dz 1.5)
         (= hit-index 2) (scatter-metal dx dy dz 1 0.3 0.3)
         (= hit-index 3) (scatter-lambertian 0.05 0.05 1)
+        (= hit-index 4) (scatter-lambertian 0.05 1 0.05)
         (else ; Ray flew off into the sky
           (v3-store* r g b SKY-COLOR)
           (v3:= hit.color (Vec3 r g b))

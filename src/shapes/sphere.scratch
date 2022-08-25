@@ -22,4 +22,5 @@
     (v3:= hit.normal (v3- hit.pos (Vec3 sphere.x sphere.y sphere.z)))
     (:= normal-len (v3-len hit.normal))
     (v3:= hit.normal (v3-scale (/ 1 normal-len) hit.normal))
+    (v3-use set-hit-front-face ray.dir)
     (:= did-hit true)))

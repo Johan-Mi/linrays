@@ -1,0 +1,34 @@
+(sprite "main"
+  (proc (scatter-dielectric ray.dx ray.dy ray.dz ir)
+    (variables refraction-ratio
+               ray-len unit.dx unit.dy unit.dz
+               cos-theta sin-theta r0
+               perp.x perp.y perp.z)
+    (v3:= scattered.color (Vec3 1 1 1))
+    (if (= true hit.front-face)
+      (then (:= refraction-ratio (/ 1 ir)))
+      (else (:= refraction-ratio ir)))
+    (:= ray-len (v3-len ray.dir))
+    (v3-store unit.dx unit.dy unit.dz (v3-scale (/ 1 ray-len) ray.dir))
+    (:= cos-theta (- (v3-dot (Vec3 unit.dx unit.dy unit.dz)
+                             hit.normal)))
+    (clamp-below cos-theta 1)
+    (:= sin-theta (sqrt (- 1 (* cos-theta cos-theta))))
+    (when (< (* refraction-ratio sin-theta) 1)
+      (:= r0 (/ (- 1 refraction-ratio)
+                (+ 1 refraction-ratio)))
+      (:= r0 (* r0 r0))
+      (when (< (+ r0 (* (- 1 r0)
+                        (pow (- 1 cos-theta) 5)))
+               (random 0.0 "1.0"))
+        (v3-store perp.x perp.y perp.z
+                  (v3-scale refraction-ratio
+                            (v3+ (Vec3 unit.dx unit.dy unit.dz)
+                                 (v3-scale cos-theta hit.normal))))
+        (v3:= scattered.dir
+              (v3- (Vec3 perp.x perp.y perp.z)
+                   (v3-scale
+                     (sqrt (abs (- 1 (v3-len^2 (Vec3 perp.x perp.y perp.z)))))
+                     hit.normal)))
+        (stop-this-script)))
+    (v3:= scattered.dir (v3-reflect ray.dir hit.normal))))

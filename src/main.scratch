@@ -79,7 +79,7 @@
       (then
         (:= hit.front-face true))
       (else
-        (:= hit.front-face true)
+        (:= hit.front-face false)
         (v3:= hit.normal (v3-scale -1 hit.normal)))))
 
   (proc (trace ray.x ray.y ray.z ray.dx ray.dy ray.dz)

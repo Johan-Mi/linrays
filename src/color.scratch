@@ -1,37 +1,29 @@
 (sprite "main"
   (proc (gamma-correct r g b)
     (variables r2 g2 b2 luma sat)
-    (:= r2 (pow r (/ 1 gamma)))
-    (:= g2 (pow g (/ 1 gamma)))
-    (:= b2 (pow b (/ 1 gamma)))
+    (v3-store r2 g2 b2 (v3-map (Vec3 r g b)
+                               chan (pow ,chan (/ 1 gamma))))
     (:= luma (v3-dot (Vec3 r2 g2 b2)
                      (Vec3 0.299 0.587 0.114)))
     (:= sat 1)
-    (cond
-      (> r2 1) (clamp-below sat (/ (- luma 1) (- luma r2)))
-      (< r2 0) (clamp-below sat (/ luma (- luma r2))))
-    (cond
-      (> g2 1) (clamp-below sat (/ (- luma 1) (- luma g2)))
-      (< g2 0) (clamp-below sat (/ luma (- luma g2))))
-    (cond
-      (> b2 1) (clamp-below sat (/ (- luma 1) (- luma b2)))
-      (< b2 0) (clamp-below sat (/ luma (- luma b2))))
+    (v3-use
+      do
+      (v3-map
+        (Vec3 r g b)
+        chan (cond
+               (> ,chan 1) (clamp-below sat (/ (- luma 1) (- luma ,chan)))
+               (< ,chan 0) (clamp-below sat (/ luma (- luma ,chan))))))
     (clamp-between sat 0 1)
-    (:= r2 (+ luma (* sat (- r2 luma))))
-    (:= g2 (+ luma (* sat (- g2 luma))))
-    (:= b2 (+ luma (* sat (- b2 luma))))
-    (cond
-      (> r2 1) (:= r2 255)
-      (< r2 0) (:= r2 0)
-      (:= r2 (floor (* r2 (- 256 1e-5)))))
-    (cond
-      (> g2 1) (:= g2 255)
-      (< g2 0) (:= g2 0)
-      (:= g2 (floor (* g2 (- 256 1e-5)))))
-    (cond
-      (> b2 1) (:= b2 255)
-      (< b2 0) (:= b2 0)
-      (:= b2 (floor (* b2 (- 256 1e-5)))))
+    (v3-store r2 g2 b2 (v3-map (Vec3 r2 g2 b2)
+                               chan (+ luma (* sat (- ,chan luma)))))
+    (v3-use
+      do
+      (v3-map
+        (Vec3 r2 g2 b2)
+        chan (cond
+               (> ,chan 1) (:= ,chan 255)
+               (< ,chan 0) (:= ,chan 0)
+               (:= ,chan (floor (* ,chan (- 256 1e-5)))))))
     (set-pen-color (+ (* 0x010000 r2)
                       (* 0x000100 g2)
                       (* 0x000001 b2)))))

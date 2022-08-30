@@ -9,7 +9,5 @@
                (Vec3 (* (sin theta) (cos phi))
                      (* (sin theta) (sin phi))
                      (cos theta))))
-    (when (and (< (abs scattered.dx) 1e-8)
-               (< (abs scattered.dy) 1e-8)
-               (< (abs scattered.dz) 1e-8))
+    (when (v3-use and (v3-map scattered.dir coord (< (abs ,coord) 1e-8)))
       (v3:= scattered.dir hit.normal))))

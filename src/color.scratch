@@ -10,9 +10,8 @@
       do
       (v3-map
         (Vec3 r g b)
-        chan (cond
-               (> ,chan 1) (clamp-below sat (/ (- luma 1) (- luma ,chan)))
-               (< ,chan 0) (clamp-below sat (/ luma (- luma ,chan))))))
+        chan (when (> ,chan 1)
+               (clamp-below sat (/ (- luma 1) (- luma ,chan))))))
     (clamp-between sat 0 1)
     (v3-store r2 g2 b2 (v3-map (Vec3 r2 g2 b2)
                                chan (+ luma (* sat (- ,chan luma)))))

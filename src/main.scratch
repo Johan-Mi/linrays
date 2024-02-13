@@ -19,12 +19,12 @@
 (macro scattered.color (Vec3 scattered.r scattered.g scattered.b))
 
 (macro (v3-reflect vec normal)
-       (v3- ,vec (v3-scale (* 2 (v3-dot ,vec ,normal)) ,normal)))
+  (v3- ,vec (v3-scale (* 2 (v3-dot ,vec ,normal)) ,normal)))
 
 (macro (set-hit-index i)
-       (when (= true did-hit)
-         (:= t-max hit.t)
-         (:= hit-index ,i)))
+  (when (= true did-hit)
+    (:= t-max hit.t)
+    (:= hit-index ,i)))
 
 (include "src/basic-macros.scratch")
 (include "src/color.scratch")
